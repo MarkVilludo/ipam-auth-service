@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  auth-app:
+    build: .
+    container_name: ipam-auth
+    ports:
+      - "9002:9000"
+    env_file:
+      - .env
+    depends_on:
+      - auth-db
+    networks:
+      - auth-net
+
+  auth-db:
+    image: mysql:8.0
+    container_name: ipam-auth-db
+    environment:
+      MYSQL_DATABASE: auth_db
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - auth-db-data:/var/lib/mysql
+    networks:
+      - auth-net
+
+volumes:
+  auth-db-data:
+
+networks:
+  auth-net:
