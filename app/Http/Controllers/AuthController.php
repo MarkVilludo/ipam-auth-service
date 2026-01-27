@@ -36,7 +36,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $result = $this->loginUserAction->execute($request->only('email', 'password'));
+        $result = $this->loginUserAction->execute($request->only('email', 'password'), $request);
         return response()->json(
             collect($result)->except('status')->toArray(),
             $result['status']
@@ -70,9 +70,9 @@ class AuthController extends Controller
     /**
      * Logout user (invalidate token)
      */
-    public function logout()
+    public function logout(Request $request)
     {
-        $result = $this->logoutUserAction->execute();
+        $result = $this->logoutUserAction->execute($request);
         return response()->json(
             collect($result)->except('status')->toArray(),
             $result['status']

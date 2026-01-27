@@ -2,14 +2,18 @@
 
 namespace App\Actions\Auth;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Services\AuditLogService;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class LogoutUserAction
 {
-    public function execute(): array
+    public function __construct(
+        private AuditLogService $auditLogService
+    ) {}
+
+    public function execute(?Request $request = null): array
     {
         try {
             $user = auth()->user();
@@ -18,9 +22,16 @@ class LogoutUserAction
 
             JWTAuth::invalidate(JWTAuth::getToken());
 
-            // Log logout event to IP management service
+            // Log logout event to IP management service (non-blocking)
+            // Use request() helper if $request is not provided
             if ($userEmail && $userId) {
-                $this->logLogoutEvent($userId, $userEmail);
+                $this->auditLogService->logLogout(
+                    $userId,
+                    $userEmail,
+                    $request ?? request(),
+                    $user->name ?? null,
+                    $user->role ?? null
+                );
             }
 
             return [
@@ -34,21 +45,6 @@ class LogoutUserAction
                 'message' => 'Failed to logout, please try again',
                 'status' => 500,
             ];
-        }
-    }
-
-    private function logLogoutEvent(int $userId, string $userEmail): void
-    {
-        try {
-            $ipServiceUrl = env('IP_SERVICE_URL', 'http://ip:80');
-            Http::post("{$ipServiceUrl}/api/internal/audit-log", [
-                'action' => 'logout',
-                'user_id' => $userId,
-                'user_email' => $userEmail,
-                'description' => "User {$userEmail} logged out",
-            ]);
-        } catch (\Exception $e) {
-            Log::warning('Failed to log logout event to IP service: ' . $e->getMessage());
         }
     }
 }

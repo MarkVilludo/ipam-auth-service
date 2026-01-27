@@ -2,15 +2,19 @@
 
 namespace App\Actions\Auth;
 
+use App\Services\AuditLogService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class LoginUserAction
 {
-    public function execute(array $credentials): array
+    public function __construct(
+        private AuditLogService $auditLogService
+    ) {}
+
+    public function execute(array $credentials, ?Request $request = null): array
     {
         $validator = Validator::make($credentials, [
             'email' => 'required|string|email',
@@ -43,8 +47,15 @@ class LoginUserAction
 
         $user = auth()->user();
 
-        // Log login event to IP management service
-        $this->logLoginEvent($user);
+        // Log login event to IP management service (non-blocking)
+        // Use request() helper if $request is not provided
+        $this->auditLogService->logLogin(
+            $user->id,
+            $user->email,
+            $request ?? request(),
+            $user->name ?? null,
+            $user->role ?? null
+        );
 
         return [
             'success' => true,
@@ -54,7 +65,7 @@ class LoginUserAction
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'role' => $user->role,
+                    'role' => $user->role ?? null,
                 ],
                 'token' => $token,
                 'token_type' => 'bearer',
@@ -62,20 +73,5 @@ class LoginUserAction
             ],
             'status' => 200,
         ];
-    }
-
-    private function logLoginEvent($user): void
-    {
-        try {
-            $ipServiceUrl = env('IP_SERVICE_URL', 'http://ip:80');
-            Http::post("{$ipServiceUrl}/api/internal/audit-log", [
-                'action' => 'login',
-                'user_id' => $user->id,
-                'user_email' => $user->email,
-                'description' => "User {$user->email} logged in",
-            ]);
-        } catch (\Exception $e) {
-            Log::warning('Failed to log login event to IP service: ' . $e->getMessage());
-        }
     }
 }
