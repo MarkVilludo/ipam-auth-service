@@ -19,7 +19,7 @@ class AuditLogService
      */
     public function __construct()
     {
-        $this->ipServiceUrl = env('IP_SERVICE_URL', 'http://ip:80');
+        $this->ipServiceUrl = env('IP_SERVICE_URL', 'http://localhost:8001');
     }
 
     /**
