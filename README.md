@@ -24,11 +24,10 @@ You have multiple options for setting up the project locally. Choose the one tha
    cd ipam-auth-service
    ```
 3. Copy `docker/local/.env.local` to `site/.env` and configure as needed (optional: if omitted, the container uses a default at first run).
-4. Append to your local hosts file (`/etc/hosts` on macOS/Linux):
+4. Append on your local hosts:
    ```text
    127.0.0.1 api-auth-service.local.com
    ```
-   Then use the API **with the port**: **http://api-auth-service.local.com:8080** or **https://api-auth-service.local.com:8443** (do not omit `:8080` / `:8443`).
 5. Create local certificate (mkcert):
 
    ```text
@@ -42,7 +41,7 @@ You have multiple options for setting up the project locally. Choose the one tha
    ```bash
    docker compose -f docker-compose.local.yml up --build -d
    ```
-   Access the API at **http://localhost:8080**, **https://localhost:8443**, **http://api-auth-service.local.com:8080**, or **https://api-auth-service.local.com:8443**. You must include the port (`:8080` or `:8443`).
+   Access the API at **https://api-auth-service.local.com:8443**. The port is required when running multiple containers (auth, IP management, gateway, etc.) so each stack uses different host ports and does not conflict. To use a URL without a port, run a single reverse proxy (e.g. gateway) on 80/443 that routes by hostname to each service.
 7. Generate new app key:
    ```bash
    docker exec api-auth-service php artisan key:generate
@@ -52,13 +51,7 @@ You have multiple options for setting up the project locally. Choose the one tha
    docker exec api-auth-service php artisan migrate
    docker exec api-auth-service php artisan db:seed
    ```
-9. **Connect to MySQL from your machine** (TablePlus, DBeaver, CLI): use **port 3308** (not 3306). The container maps `3308:3306`.
-   - Host: `127.0.0.1`
-   - Port: **3308**
-   - User: `root`
-   - Password: `secret`
-   - Database: `auth_service`
-10. Use postman collection to test the app.
+9. Use postman collection to test the app.
    - TBA
 
 ### Option 2: Laragon
