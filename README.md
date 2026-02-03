@@ -1,4 +1,4 @@
-# Auth Service (IPAM)
+# Auth Service
 
 Authentication and authorization microservice for the IP Address Management (IPAM) system. It issues JWT tokens for the gateway and frontend, manages user registration and login, and enforces roles (e.g. `user`, `super_admin`) via Spatie Permission so other services (e.g. IP management) can authorize requests.
 
