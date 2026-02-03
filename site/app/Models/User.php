@@ -63,13 +63,14 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
+     * Role is explicitly taken from the api guard so gateways and IP service receive it.
      */
     public function getJWTCustomClaims()
     {
         return [
             'name' => $this->name,
             'email' => $this->email,
-            'role' => $this->role,
+            'role' => (string) $this->roleForApiGuard(),
         ];
     }
 
@@ -78,7 +79,16 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getRoleAttribute(): string
     {
-        return $this->getRoleNames()->first() ?? 'user';
+        return $this->roleForApiGuard();
+    }
+
+    /**
+     * Get the role name for the api guard (used in JWT so IP service and gateway see super_admin).
+     */
+    protected function roleForApiGuard(): string
+    {
+        $role = $this->roles()->where('guard_name', 'api')->first();
+        return $role ? (string) $role->name : 'user';
     }
 
     /**

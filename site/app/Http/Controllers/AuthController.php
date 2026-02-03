@@ -24,7 +24,7 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $result = $this->registerUserAction->execute($request->all());
+        $result = $this->registerUserAction->execute($request->only('name', 'email', 'password'));
         return response()->json(
             collect($result)->except('status')->toArray(),
             $result['status']
