@@ -16,7 +16,8 @@ class LogoutUserAction
     public function execute(?Request $request = null): array
     {
         try {
-            $user = auth()->user();
+            // User is on the api (JWT) guard; auth()->user() uses default guard (web) and can be null
+            $user = JWTAuth::user();
             $userEmail = $user ? $user->email : null;
             $userId = $user ? $user->id : null;
 
@@ -30,7 +31,7 @@ class LogoutUserAction
                     $userEmail,
                     $request ?? request(),
                     $user->name ?? null,
-                    $user->role ?? null
+                    $user->role ?? 'user'
                 );
             }
 

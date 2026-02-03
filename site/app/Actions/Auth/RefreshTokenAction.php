@@ -11,7 +11,7 @@ class RefreshTokenAction
     {
         try {
             $token = JWTAuth::refresh(JWTAuth::getToken());
-            $user = auth()->user();
+            $user = JWTAuth::user();
 
             return [
                 'success' => true,

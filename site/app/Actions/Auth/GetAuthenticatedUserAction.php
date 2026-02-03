@@ -2,6 +2,7 @@
 
 namespace App\Actions\Auth;
 
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class GetAuthenticatedUserAction
@@ -9,7 +10,7 @@ class GetAuthenticatedUserAction
     public function execute(): array
     {
         try {
-            $user = auth()->user();
+            $user = JWTAuth::user();
 
             if (!$user) {
                 return [

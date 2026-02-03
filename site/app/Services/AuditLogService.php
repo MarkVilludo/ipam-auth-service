@@ -69,9 +69,8 @@ class AuditLogService
             if ($userName !== null) {
                 $payload['name'] = $userName;
             }
-            if ($userRole !== null) {
-                $payload['role'] = $userRole;
-            }
+            // Always send role so IP service stores super_admin correctly (default 'user' if missing)
+            $payload['role'] = $userRole ?? 'user';
             // Add IP address and user agent if available
             if ($ipAddress) {
                 $payload['ip_address'] = $ipAddress;

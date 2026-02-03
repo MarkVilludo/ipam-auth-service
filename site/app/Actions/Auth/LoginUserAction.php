@@ -45,16 +45,16 @@ class LoginUserAction
             ];
         }
 
-        $user = auth()->user();
+        // User is on the api (JWT) guard after attempt(); auth()->user() uses default guard (web) and can be null
+        $user = JWTAuth::user();
 
         // Log login event to IP management service (non-blocking)
-        // Use request() helper if $request is not provided
         $this->auditLogService->logLogin(
             $user->id,
             $user->email,
             $request ?? request(),
             $user->name ?? null,
-            $user->role ?? null
+            $user->role ?? 'user'
         );
 
         return [
