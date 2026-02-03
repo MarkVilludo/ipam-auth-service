@@ -15,7 +15,8 @@ return [
     |
     */
 
-    'secret' => env('JWT_SECRET'),
+    // Prefer runtime env (e.g. Docker) so IP service can verify our tokens
+    'secret' => getenv('JWT_SECRET') ?: env('JWT_SECRET'),
 
     /*
     |--------------------------------------------------------------------------

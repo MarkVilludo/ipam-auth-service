@@ -53,7 +53,3 @@ You have multiple options for setting up the project locally. Choose the one tha
    ```
 9. Use postman collection to test the app.
    - TBA
-
-### Option 2: Laragon
-
-### Option 3: Herd

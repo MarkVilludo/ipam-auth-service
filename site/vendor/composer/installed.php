@@ -92,7 +92,7 @@
             'install_path' => __DIR__ . '/../fakerphp/faker',
             'aliases' => array(),
             'reference' => 'e0ee18eb1e6dc3cda3ce9fd97e5a0689a88a64b5',
-            'dev_requirement' => true,
+            'dev_requirement' => false,
         ),
         'filp/whoops' => array(
             'pretty_version' => '2.18.4',

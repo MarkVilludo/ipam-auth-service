@@ -29,8 +29,8 @@ class RegisterUserAction
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => 'user',
         ]);
+        $user->assignRole('user');
 
         $token = JWTAuth::fromUser($user);
 

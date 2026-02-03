@@ -5,11 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
+
+    /**
+     * The default guard name for Spatie Permission (API auth).
+     *
+     * @var string
+     */
+    protected $guard_name = 'api';
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +28,6 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'role',
     ];
 
     /**
@@ -67,11 +74,11 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Role accessor: use column value or default 'user'
+     * Role accessor: first Spatie role name or default 'user'
      */
     public function getRoleAttribute(): string
     {
-        return $this->attributes['role'] ?? 'user';
+        return $this->getRoleNames()->first() ?? 'user';
     }
 
     /**
@@ -79,6 +86,6 @@ class User extends Authenticatable implements JWTSubject
      */
     public function isSuperAdmin(): bool
     {
-        return ($this->attributes['role'] ?? 'user') === 'super_admin';
+        return $this->hasRole('super_admin');
     }
 }

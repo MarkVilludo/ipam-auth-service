@@ -6,8 +6,8 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,27 +18,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed roles first
-        $this->call(RoleSeeder::class);
+        $guard = 'api';
+        Role::firstOrCreate(['name' => 'user', 'guard_name' => $guard]);
+        Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => $guard]);
 
-        // Create a test user with 'user' role
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        $user->assignRole('user');
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@gmail.com'],
+            [
+                'name' => 'Test User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+            ]
+        );
+        if (! $testUser->hasRole('user')) {
+            $testUser->assignRole('user');
+        }
 
-        // Create a super admin user
-        $admin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        $admin->assignRole('super_admin');
+        $adminUser = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'remember_token' => Str::random(10),
+            ]
+        );
+        if (! $adminUser->hasRole('super_admin')) {
+            $adminUser->assignRole('super_admin');
+        }
     }
 }

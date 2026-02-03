@@ -12,7 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Set JWT secret as early as possible so tokens use the same secret as the IP service.
+        $this->ensureJwtSecretFromEnvironment();
     }
 
     /**
@@ -21,6 +22,23 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->ensureJwtNumericConfig();
+    }
+
+    /**
+     * Prefer JWT_SECRET from runtime environment (e.g. Docker) so auth and IP service always match.
+     * Fall back to .env when running locally.
+     */
+    protected function ensureJwtSecretFromEnvironment(): void
+    {
+        $secret = getenv('JWT_SECRET');
+        if ($secret !== false && $secret !== '') {
+            Config::set('jwt.secret', $secret);
+            return;
+        }
+        $fromEnv = env('JWT_SECRET');
+        if ($fromEnv !== null && $fromEnv !== '') {
+            Config::set('jwt.secret', $fromEnv);
+        }
     }
 
     /**
