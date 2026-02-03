@@ -1,6 +1,8 @@
-# RMS - Backend
+# Auth Service (IPAM)
 
-This project is an API built using Laravel. Below are instructions to set up the project locally using various development environments.
+Authentication and authorization microservice for the IP Address Management (IPAM) system. It issues JWT tokens for the gateway and frontend, manages user registration and login, and enforces roles (e.g. `user`, `super_admin`) via Spatie Permission so other services (e.g. IP management) can authorize requests.
+
+**Purpose:** Single place for user identity and JWT issuance; the gateway and IP service rely on this service for authenticated API access and role-based access control.
 
 ## Prerequisites
 
