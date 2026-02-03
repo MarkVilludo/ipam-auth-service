@@ -15,9 +15,7 @@ Authentication and authorization microservice for the IP Address Management (IPA
 
 ## Local Setup
 
-You have multiple options for setting up the project locally. Choose the one that suits your environment best.
-
-### Option 1: Docker (recommended)
+### Docker (recommended)
 
 1. Ensure Docker is installed on your machine.
 2. Clone the repository:
